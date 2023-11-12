@@ -20,7 +20,7 @@ class Client:
                     f"Timeout when trying to connect to engine at {self.port_number}"
                 )
             address = (
-                "localhost",
+                "127.0.0.1",
                 self.port_number,
             )
 
