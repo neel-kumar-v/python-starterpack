@@ -74,6 +74,17 @@ def serve(port: int):
                     response_str = json.dumps(response.serialize())
 
                     client.write(response_str)
+                elif phase == ReceivedMessagePhase.PLANE_SELECT:
+                    response = strategy.select_planes()
+
+                    serialized_response = dict()
+
+                    for type, count in response.items():
+                        serialized_response[type.value] = count
+
+                    response_str = json.dumps(serialized_response)
+
+                    client.write(response_str)
                 elif phase == ReceivedMessagePhase.FINISH:
                     print("Finished")
 

@@ -4,6 +4,7 @@ from enum import Enum
 
 class ReceivedMessagePhase(Enum):
     HELLO_WORLD = "HELLO_WORLD"
+    PLANE_SELECT = "PLANE_SELECT"
     INPUT = "INPUT"
     FINISH = "FINISH"
 
