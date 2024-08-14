@@ -11,7 +11,11 @@ import sys
 from typing import IO
 
 from game.plane import Plane
-import engine
+
+try:
+    import engine
+except:
+    pass
 
 from game.plane_data import PLANE_TYPE_TO_STATS, PlaneStats, PlaneType
 from network.client import Client
@@ -54,7 +58,8 @@ COMMANDS_FOR_OPPONENT: dict[RunOpponent, list[tuple[str, str]]] = {
 
 
 def run(opponent: RunOpponent):
-    engine.update_if_not_latest()
+    if engine:
+        engine.update_if_not_latest()
 
     print(
         f"Running against opponent {opponent.value}... (might take a minute, please wait)"
