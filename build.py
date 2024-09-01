@@ -23,6 +23,8 @@ ignore_list = [
     "debuglogs/*",
     "logs",
     "logs/*",
+    "engine/",
+    "engine/*"
 ]
 
 
