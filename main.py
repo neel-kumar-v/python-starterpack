@@ -215,7 +215,7 @@ def serve(port: int):
 
                     client.write(response_str)
                 elif phase == ReceivedMessagePhase.FINISH:
-                    print("Finished")
+                    print(data)
 
                     break
                 else:
