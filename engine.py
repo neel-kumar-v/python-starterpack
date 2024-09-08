@@ -88,6 +88,7 @@ def __install():
     print("Checking for npm installation...")
     check_npm = subprocess.run(
         ["npm", "--version"],
+        cwd=ENGINE_DIR,
         shell=True,
         text=True,
         stdout=subprocess.PIPE,
