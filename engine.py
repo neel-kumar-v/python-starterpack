@@ -87,8 +87,7 @@ def __download(url):
 def __install():
     print("Checking for npm installation...")
     check_npm = subprocess.run(
-        ["npm", "--version"],
-        cwd=ENGINE_DIR,
+        "npm --version",
         shell=True,
         text=True,
         stdout=subprocess.PIPE,
@@ -117,7 +116,7 @@ def __install():
     print("Installing node_modules (npm install)...")
 
     install = subprocess.run(
-        ["npm", "install"],
+        "npm install",
         cwd=f"{ENGINE_CONTENT_PATH}",
         shell=True,
         text=True,
