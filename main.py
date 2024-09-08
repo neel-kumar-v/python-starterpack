@@ -85,7 +85,7 @@ def run(opponent: RunOpponent):
         process = subprocess.Popen(
             command,
             shell=True,
-            cwd=f"engine/engine" if i == 0 else None,
+            cwd=f"engine/content" if i == 0 else None,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
@@ -146,7 +146,7 @@ def run(opponent: RunOpponent):
         os.makedirs(output_logs_dir, exist_ok=True)
 
     for i in range(len(processes)):
-        filename = f"{output_logs_dir}{prefixes[i].lower()}.txt"
+        filename = f"{output_logs_dir}{prefixes[i].replace(' ', '_').lower()}.txt"
         files.append(filename)
         output = list(map(lambda x: x[3], filter(lambda x: x[2] == i, all)))
 
