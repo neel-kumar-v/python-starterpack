@@ -3,12 +3,14 @@ from datetime import datetime
 from enum import Enum
 import json
 import os
+from queue import Queue, Empty
 import subprocess
 import threading
 import time
 import traceback
 import sys
 from typing import IO
+import time
 
 from game.plane import Plane
 
@@ -39,20 +41,25 @@ class RunOpponent(Enum):
     COMPUTER_TEAM_0 = "computerTeam0"
     COMPUTER_TEAM_1 = "computerTeam1"
 
+RED = '\033[91m'
+GREEN = '\033[92m'
+YELLOW = "\033[93m"
+BLUE = '\033[94m'
+RESET = '\033[0m'
 
 COMMANDS_FOR_OPPONENT: dict[RunOpponent, list[tuple[str, str]]] = {
     RunOpponent.SELF: [
-        ("Engine", "npm start 3001 3002"),
-        ("Team 0", "python main.py serve 3001"),
-        ("Team 1", "python main.py serve 3002"),
+        ("Engine", "npm start 3001 3002", YELLOW),
+        ("Team 0", "python main.py serve 3001", GREEN),
+        ("Team 1", "python main.py serve 3002", BLUE),
     ],
     RunOpponent.COMPUTER_TEAM_0: [
-        ("Engine", "npm start 0 9001"),
-        ("Team 1", "python main.py serve 9001"),
+        ("Engine", "npm start 0 9001", YELLOW),
+        ("Team 1", "python main.py serve 9001", BLUE),
     ],
     RunOpponent.COMPUTER_TEAM_1: [
-        ("Engine", "npm start 9001 0"),
-        ("Team 0", "python main.py serve 9001"),
+        ("Engine", "npm start 9001 0", YELLOW),
+        ("Team 0", "python main.py serve 9001", GREEN),
     ],
 }
 
@@ -68,6 +75,7 @@ def run(opponent: RunOpponent):
     info = COMMANDS_FOR_OPPONENT[opponent]
     prefixes = list(map(lambda x: x[0], info))
     commands = list(map(lambda x: x[1], info))
+    colors = list(map(lambda x: x[2], info))
 
     now = datetime.now()
     formatted_now = now.strftime("%Y_%m_%d__%H_%M_%S")
@@ -78,6 +86,8 @@ def run(opponent: RunOpponent):
     new_env = os.environ.copy()
     # Set gamelog output location, needs to be relative to engine directory
     new_env["OUTPUT"] = os.path.join("../../", gamelog_path)
+    # Do not buffer output
+    new_env["PYTHONUNBUFFERED"] = "1"
 
     # Launch each command in a separate terminal
     processes: list[subprocess.Popen] = []
@@ -88,20 +98,22 @@ def run(opponent: RunOpponent):
             cwd=f"engine/content" if i == 0 else None,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
+            bufsize=0,
             text=True,
             env=new_env,
         )
         processes.append(process)
 
-    outputs: list[list[tuple[bool, int, int, str]]] = []
+        # Start the engine first, then wait to start everything else (mac requires engine to start first)
+        if i == 0:
+            time.sleep(1)
+
+    queue = Queue()
 
     def run_and_output(io: IO, i: int, is_err: True):
-        list = []
         for line in iter(io.readline, ""):
             line: str
-            list.append((is_err, time.time_ns(), i, line.strip()))
-
-        outputs.append(list)
+            queue.put((is_err, time.time_ns(), i, line.strip()))
 
     threads: list[threading.Thread] = []
     for i in range(len(processes) - 1, -1, -1):
@@ -118,27 +130,34 @@ def run(opponent: RunOpponent):
         threads.append(thread_stdout)
         threads.append(thread_stderr)
 
+    outputs = []
+
+    while all(t.is_alive() for t in threads):
+        try:
+            item = queue.get(timeout=0.1)
+            outputs.append(item)
+            is_err, timestamp, i, line = item
+            prefix = prefixes[i]
+            color = colors[i] if not is_err else RED
+            print(f"{color}[{prefix}] {line}{RESET}", flush=True, file=sys.stderr if is_err else sys.stdout)
+        except Empty:
+            pass
+
     for thread in threads:
         thread.join()
 
-    all = []
-
-    for output in outputs:
-        for data in output:
-            all.append(data)
-
-    all.sort(key=lambda x: x[1])
+    outputs.sort(key=lambda x: x[1])
 
     last = -1
 
-    for data in all:
-        is_err, time_ns, i, line = data
+    # for data in all:
+    #     is_err, time_ns, i, line = data
 
-        if i != last:
-            last = i
-            print(f"[{prefixes[i]}]:")
+    #     if i != last:
+    #         last = i
+    #         print(f"[{prefixes[i]}]:")
 
-        print(f"\t{line}")
+    #     print(f"\t{line}")
 
     files = []
 
@@ -148,7 +167,7 @@ def run(opponent: RunOpponent):
     for i in range(len(processes)):
         filename = f"{output_logs_dir}{prefixes[i].replace(' ', '_').lower()}.txt"
         files.append(filename)
-        output = list(map(lambda x: x[3], filter(lambda x: x[2] == i, all)))
+        output = list(map(lambda x: x[3], filter(lambda x: x[2] == i, outputs)))
 
         with open(filename, "w") as file:
             file.write("\n".join(output))
