@@ -148,17 +148,6 @@ def run(opponent: RunOpponent):
 
     outputs.sort(key=lambda x: x[1])
 
-    last = -1
-
-    # for data in all:
-    #     is_err, time_ns, i, line = data
-
-    #     if i != last:
-    #         last = i
-    #         print(f"[{prefixes[i]}]:")
-
-    #     print(f"\t{line}")
-
     files = []
 
     if not os.path.exists(output_logs_dir):
