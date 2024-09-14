@@ -22,7 +22,7 @@ except:
 from game.plane_data import PLANE_TYPE_TO_STATS, PlaneStats, PlaneType
 from network.client import Client
 from network.received_message import ReceivedMessage, ReceivedMessagePhase
-from strategy.choose_strategy import choose_strategy
+from strategy.strategy import Strategy
 
 raw_debug_env = os.environ.get("DEBUG")
 DEBUG = raw_debug_env == "1" or raw_debug_env == "true"
@@ -207,7 +207,7 @@ def serve(port: int):
                     our_team = data["team"]
                     for type, stats in data["stats"].items():
                         PLANE_TYPE_TO_STATS[PlaneType[type]] = PlaneStats.deserialize(stats)
-                    strategy = choose_strategy(our_team)
+                    strategy = Strategy(our_team)
 
                     client.write(json.dumps({
                         "good": True,
