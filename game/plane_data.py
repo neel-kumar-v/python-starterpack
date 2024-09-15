@@ -1,21 +1,41 @@
 from dataclasses import dataclass
 from enum import Enum
-
+import math
 
 @dataclass
-class Position:
+class Vector:
     x: float
     y: float
 
-    def deserialize(blob: object) -> "Position":
+    def deserialize(blob: object) -> "Vector":
         try:
-            pos = Position(blob["x"], blob["y"])
+            pos = Vector(blob["x"], blob["y"])
         except:
             print("Failed to validate position json")
             raise
 
         return pos
-
+    
+    def __add__(self, o):
+        return Vector(self.x + o.x, self.y + o.y)
+    def __sub__(self, o):
+        return Vector(self.x - o.x, self.y - o.y)
+    def __rmul__(self, lhs):
+        return self * lhs
+    def __mul__(self, o):
+        return Vector(o*self.x, o*self.y)
+    def __eq__(self, o):
+        return self.x == o.x and self.y == o.y
+    def __neg__(self):
+        return Vector(-self.x, -self.y)
+    
+    def dot(self, o):
+        return self.x*o.x+self.y*o.y
+    def norm(self):
+        return (self.x**2 + self.y**2)**.5
+    def distance(self, o):
+        return ((self.x-o.x)**2 + (self.y-o.y)**2)**.5
+    
 class PlaneType(Enum):
     STANDARD = "STANDARD"
     FLYING_FORTRESS = "FLYING_FORTRESS"
