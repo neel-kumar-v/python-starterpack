@@ -16,11 +16,11 @@ class Strategy(BaseStrategy):
     def select_planes(self) -> dict[PlaneType, int]:
         # Select which planes you want, and what number
         return {
-            PlaneType.STANDARD: 0,
-            PlaneType.FLYING_FORTRESS: 0,
-            PlaneType.THUNDERBIRD: 0,
-            PlaneType.SCRAPYARD_RESCUE: 0,
-            PlaneType.PIGEON: 100,
+            PlaneType.STANDARD: 1,
+            PlaneType.FLYING_FORTRESS: 1,
+            PlaneType.THUNDERBIRD: 1,
+            PlaneType.SCRAPYARD_RESCUE: 1,
+            PlaneType.PIGEON: 10,
         }
     
     def steer_input(self, planes: dict[str, Plane]) -> dict[str, int]:
