@@ -17,7 +17,11 @@ class Position:
         return pos
 
 class PlaneType(Enum):
-    BASIC = "BASIC"
+    STANDARD = "STANDARD"
+    FLYING_FORTRESS = "FLYING_FORTRESS"
+    THUNDERBIRD = "THUNDERBIRD"
+    SCRAPYARD_RESCUE = "SCRAPYARD_RESCUE"
+    PIGEON = "PIGEON"
 
 @dataclass
 class PlaneStats:
@@ -41,5 +45,3 @@ class PlaneStats:
             raise
 
         return plane
-    
-PLANE_TYPE_TO_STATS: dict[PlaneType, PlaneStats] = dict()

@@ -1,7 +1,6 @@
 from dataclasses import dataclass
-from enum import Enum
 
-from game.plane_data import PLANE_TYPE_TO_STATS, PlaneStats, PlaneType, Position
+from game.plane_data import PlaneStats, PlaneType, Position
 
 @dataclass
 class Plane:
@@ -22,7 +21,7 @@ class Plane:
                 Position.deserialize(blob["position"]),
                 blob["angle"],
                 blob["health"],
-                PLANE_TYPE_TO_STATS[PlaneType[blob["type"]]]
+                blob["stats"]
             )
         except:
             print("Failed to validate plane json")

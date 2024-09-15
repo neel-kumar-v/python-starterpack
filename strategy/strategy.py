@@ -15,7 +15,13 @@ class Strategy(BaseStrategy):
     
     def select_planes(self) -> dict[PlaneType, int]:
         # Select which planes you want, and what number
-        return {PlaneType.BASIC: random.randint(5, 10)}
+        return {
+            PlaneType.STANDARD: 0,
+            PlaneType.FLYING_FORTRESS: 0,
+            PlaneType.THUNDERBIRD: 0,
+            PlaneType.SCRAPYARD_RESCUE: 0,
+            PlaneType.PIGEON: 100,
+        }
     
     def steer_input(self, planes: dict[str, Plane]) -> dict[str, int]:
         # Define a dictionary to hold our response

@@ -19,7 +19,6 @@ try:
 except:
     pass
 
-from game.plane_data import PLANE_TYPE_TO_STATS, PlaneStats, PlaneType
 from network.client import Client
 from network.received_message import ReceivedMessage, ReceivedMessagePhase
 from strategy.strategy import Strategy
@@ -194,8 +193,6 @@ def serve(port: int):
 
                 if phase == ReceivedMessagePhase.HELLO_WORLD:
                     our_team = data["team"]
-                    for type, stats in data["stats"].items():
-                        PLANE_TYPE_TO_STATS[PlaneType[type]] = PlaneStats.deserialize(stats)
                     strategy = Strategy(our_team)
 
                     client.write(json.dumps({
