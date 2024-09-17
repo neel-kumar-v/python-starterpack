@@ -131,14 +131,14 @@ def fly_to_offset(off: Vector, init_angle: float, min_turn: float, speed: float)
     NOTE: This function has no bounds checking. Check if your returned values are within range (e.g. steer between -1 and 1).
 
     Parameters:
-        x (float): The OFFSET x to fly towards.
-        y (float): The OFFSET y to fly towards.
+        off (Vector): The OFFSET to fly towards.
         init_angle (float): The angle of the plane in degrees.
         min_turn (float): The smallest turning circle this plane can achieve.
         speed (float): The speed of the plane.
     
     Returns:
-        (steer, turns): The steer required for a plane to pass through a given OFFSET point after (turns) turns"""
+        (steer, turns): The steer required for a plane to pass through a given OFFSET point after (turns) turns
+    """
     
     x = off.x
     y = off.y
@@ -170,8 +170,7 @@ def plane_find_path_to_point(target: Vector, plane: Plane):
     NOTE: This function has no bounds checking. Check if your returned values are within range (e.g. steer between -1 and 1).
 
     Parameters:
-        x (float): The ABSOLUTE x to fly towards.
-        y (float): The ABSOLUTE y to fly towards.
+        target (Vector): The ABSOLUTE position to fly towards.
         plane (Plane): A plane object with stats and a position
     
     Returns:
@@ -189,8 +188,7 @@ def unavoidable_crash(pos: Vector, angle: float, min_turn: float, lb = -50, rb =
     This is normally impossible to achieve assuming speed, turn rate, and boundary locations are constant.
 
     Parameters:
-        x (float): x coord of the plane.
-        y (float): y coord of the plane.
+        pos (Vector): position of the plane.
         angle (float): angle of the plane in degrees
         min_turn (float): the radius of the turning circle of the sharpest turn a plane can make
     
