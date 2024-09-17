@@ -12,9 +12,9 @@
 
 # MechMania Python Starterpack
 
-Welcome to MechMania! The python starterpack will allow you to write a python bot to compete against others.
-Two bots will be faced against each other, and then the [engine](https://github.com/MechMania-29/engine) will run a simulation to see who wins!
-After the engine runs you'll get a gamelog (a large json file) that you can use in the [visualizer](https://github.com/MechMania-29/visualizer) to
+Welcome to MechMania! The Python Starterpack will allow you to write a pythom bot to compete against others.
+Two bots will be faced against each other, and then the [Engine](https://github.com/MechMania-30/engine) will run a simulation to see who wins!
+After the engine runs you'll get a gamelog (a large json file) that you can use in the [Visualizer](https://github.com/MechMania-30/visualizer) to
 visualize the game's progress and end result.
 
 </div>
@@ -23,72 +23,102 @@ visualize the game's progress and end result.
 
 ## Installation
 
-To begin, make sure you have Java 17+ installed. You can test this by running:
+### NPM / Node
 
+First, you'll need [**Node**](https://nodejs.org/en/download/prebuilt-binaries). You can check if you have it installed by running:
 ```sh
-java --version
+npm --version
 ```
 
-Also, you'll need python 3.9+, and you can make sure you have it by running:
+You should see:
+```txt
+10.8.2
+```
+```
+
+### Python
+
+For the starterpack, you'll need [**Python 3.11+**](https://www.python.org/downloads/), which you can check by running:
 
 ```sh
 python --version
 ```
 
-Make sure you're using 3.9+, or things will break!
-
-To install the engine, you can simply run:
-
-```
-python engine.py
+You should see:
+```txt
+Python 3.12.6
 ```
 
-and you should see an engine.jar appear in engine/engine.jar!
+### Git
 
-If you don't, you can manually install it by following the instructions on the [engine](https://github.com/MechMania-29/engine) page.
+You'll also need [**Git**](https://git-scm.com/downloads), which you can check by running:
+```sh
+git --version
+```
+
+You should see:
+```txt
+git version 2.46.0
+```
+
+Finally, in the directory you want your starterpack to be, run:
+```sh
+git clone https://github.com/MechMania-30/engine.git
+```
+
+### Editor
+
+Open this in your editor of choice! 
+We recommend using [**VSCode**](https://code.visualstudio.com/), because it's free and there's a easy to install `Python` extension to get up and running quickly.
 
 ## Getting started
 
-If you haven't read the [wiki](https://github.com/MechMania-29/Wiki) yet, do that first! This starterpack provides the basics for you to get started. All the files you need to worry about editing are located in the `strategy/` directory. `choose_strategy.py` will select the specific strategy to use. You can use this to select different strategies based on whether you're a zombie or not. Each strategy has to implement 4 functions which will determine how your bot responds in each phase. Let's explain them.
-- `def decide_character_classes(self,  possible_classes: list[CharacterClassType], num_to_pick: int,  max_per_same_class: int) -> dict[CharacterClassType, int]`
-  - This function will return what classes you'll select when you're the human.
-  - `possible_classes` gives you the list of possible classes you can choose from, `num_to_pick` gives the total number you can pick, and `max_per_same_class` defines the max of how many characters can be in the same class.
-  - You will return a dictionary pairing `CharacterClassType` to the count you want of that.
-  - For example, if you wanted 5 medics, you could simply do:
-  - ```py
+**If you haven't read the [Wiki](https://github.com/MechMania-30/wiki) yet, do that first!**
+This section will explain how to program your bot, but not how the game is played!
+
+This starterpack provides the basics for you to get started.
+All the files you need to worry about editing are located in the `strategy/` directory.
+You can create any files you want to break up your code, but you should keep your changes in this folder only.
+
+We have provided an example (bad) strategy for you in `strategy/strategy.py`. **Check it out!**
+
+Your Strategy consists of two functions which will determine how your bot responds.
+- `def select_planes(self) -> dict[PlaneType, int]`
+  - This function will return the number of each plane type you would like to spawn in.
+  - You can use `self.team` to determine which team you are, and choose different planes based on which side you spawn on.
+  - You will return a `dict` pairing `PlaneType` to the count you want of that type.
+  - For example, if you wanted 5 pigeons, you could simply do:
+    ```py
     return {
-      CharacterClassType.MEDIC: 5,
+      PlaneType.PIGEON: 5
     }
     ```
-- `def decide_moves(self, possible_moves: dict[str, list[MoveAction]], game_state: GameState) -> list[MoveAction]`
-  - This function will return the moves that each character will make.
-  - `possible_moves` maps each character id to it's possible MoveActions it can take. You can use this to validate if a move is possible, or pick from this list.
-  - `game_state` is the current state of all characters and terrain on the map, you can use this to inform which move you want to make for each character
-  - A MoveAction just defines where the character will end up. You don't have to compute the possible moves manually - we give you the possible ones.
-  - A character id is just a unqiue string that represents a specific character. You can get a character by id with `game_state.characters.get(id)` -> `Character`
-  - You will return a list of moves to take, which should effectively be a move for each character.
-- `def decide_attacks(self, possible_attacks: dict[str, list[AttackAction]], game_state: GameState) -> list[AttackAction]`
-  - This function will return the attacks that each character will make.
-  - `possible_attacks` maps each character id to it's possible AttackActions it can take. You can use this to validate if a move is possible, or pick from this list.
-  - `game_state` is the same as above. Use it to inform your actions.
-  - An AttackAction can be on terrain or a character, so be careful not to just attack everything. See the file it's defined in for more info.
-  - You will return a list of attacks to make, which should be a attack for each character that can attack.
-- `def decide_abilities(self, possible_abilities: dict[str, list[AbilityAction]], game_state: GameState) -> list[AbilityAction]`
-  - This function will return the abilities that each character will make.
-  - `possible_abilities` maps each character id to it's possible AbilityActions it can take.
-  - `game_state` is same as above.
-  - An AbilityAction can be building a barricade or healing. Use type to determine which.
-  - Healing targets a character and building targets a position, so consider that accordingly.
+- `def steer_input(self, planes: dict[str, Plane]) -> dict[str, int]`
+  - This function will return the steer that each plane will do for the next turn.
+  - Steers are a value in between -1 and 1, inclusive, with -1 being full left, 0 being straight, and 1 being full right.
+  - Each plane has a unique id which can be accessed by `plane.id`.
+  - You are given a map of every alive plane, keyed by their unique id.
+    Each plane has a bunch of useful properties to strategize with. (hint hint: look at the `Plane` and `PlaneStats` classes in `game/plane.py` and `game/plane_data.py`)
+  - You will return a `dict` pairing each `Plane`'s id to the steer that plane should do.
 
 **Several useful tips:**
 - Read the docs! Reading the wiki is really important as well as the rest of this README. Don't make this harder!
-- All code for MechMania is open source, take advantage of that! For example, [the map can be found on the engine](https://github.com/MechMania-29/engine/blob/main/src/main/resources/maps/main.json).
-- You [only have 2.5 seconds](https://github.com/MechMania-29/engine/blob/main/src/main/java/mech/mania/engine/Config.java#L112) to make a decision for each phase! Don't try anything too complicated. (O^4 = bad)
-- You cannot import any external libraries.
+- All code for MechMania is open source, take advantage of that!
+- We have provided several util functions in `strategy/utils.py`, feel free to use them or change them to your needs!
+- You only have 2.5 seconds to make a decision for each phase!
+  Note that this limit is very high, and from our testing you won't reach this unless your code is very inefficient.
+- You cannot import any external libraries. While this may work locally, we cannot guarantee it will work when we battle your bots!
 
 ## Usage
 
-To run your client, you can use the following commands:
+To run your programs, simply run:
+```sh
+python main.py [commands]
+```
+
+Note: depending on how you have python installed, you might need to do `python3 main.py` instead.
+
+What commands can you run? These:
 
 ### Run your bot against itself
 
@@ -96,16 +126,18 @@ To run your client, you can use the following commands:
 python main.py run self
 ```
 
-### Run your bot against the human computer (your bot plays zombies)
+### Run your bot as Team 0 and the computer will play Team 1
+
+Note: the computer is a very bad bot, but this option is good if you want to test just a single instance of your starterpack at once.
 
 ```sh
-python main.py run humanComputer
+python main.py run computerTeam1
 ```
 
-### Run your bot against the zombie computer (your bot plays humans)
+### Run your bot as Team 1 and the computer will play Team 0
 
 ```sh
-python main.py run zombieComputer
+python main.py run computerTeam0
 ```
 
 ### Serve your bot to a port
@@ -113,6 +145,11 @@ python main.py run zombieComputer
 You shouldn't need to do this, unless none of the other methods work.
 <details>
 <summary>Expand instructions</summary>
+
+**If you have questions, please ask us!**
+We will be in person and available through the [Discord](https://discord.gg/knWWFKTU).
+The setup can be difficult, and every machine is different.
+We want you to have fun!
 
 To serve your bot to a port, you can run it like this:
 
@@ -126,22 +163,43 @@ Where port is the port you want to serve to, like 9001 for example:
 python main.py serve 9001
 ```
 
+To install the engine, run engine.py:
+```
+python engine.py
+```
+You should see a `engine/content/` folder.
+
 A full setup with the engine might look like (all 3 commands in separate terminal windows):
 
 ```sh
 python main.py serve 9001
 python main.py serve 9002
-java -jar engine.jar 9001 9002
+npm start 9001 9002
 ```
+
+Note: you must run the commands from within the right directories. The npm (engine) command should be run from inside `engine/content`.
 
 </details>
 
+## Visualizing
+
+When the bots run, you'll see the gamelog be outputed to `logs/log_xxxx/gamelog.json`.
+To visualize what happened during the game, you can use the [Visualizer](https://github.com/MechMania-30/visualizer)!
+
 ## Uploading
 
-Using the cli, you can upload your bot using:
+To install the MechMania cli, run:
+```sh
+npm i mm30 -g
+```
 
-```ssh
+To build your bot into a `pyz` (a single file that holds all of your python code), run:
+```sh
 python build.py
-mm29 upload build/bot.pyz
+```
+
+Then, using the cli, you can upload your bot using:
+```sh
+mm30 upload build/bot.pyz
 ```
 
