@@ -56,7 +56,7 @@ class PlaneStats:
             plane = PlaneStats(
                 blob["speed"],
                 blob["turnSpeed"],
-                blob["health"],
+                blob["maxHealth"],
                 blob["attackSpreadAngle"],
                 blob["attackRange"],
             )
