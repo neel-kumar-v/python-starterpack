@@ -23,7 +23,7 @@ class Strategy(BaseStrategy):
             PlaneType.PIGEON: 10,
         }
     
-    def steer_input(self, planes: dict[str, Plane]) -> dict[str, int]:
+    def steer_input(self, planes: dict[str, Plane]) -> dict[str, float]:
         # Define a dictionary to hold our response
         response = dict()
 

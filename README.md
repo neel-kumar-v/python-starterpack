@@ -93,7 +93,7 @@ Your Strategy consists of two functions which will determine how your bot respon
       PlaneType.PIGEON: 5
     }
     ```
-- `def steer_input(self, planes: dict[str, Plane]) -> dict[str, int]`
+- `def steer_input(self, planes: dict[str, Plane]) -> dict[str, float]`
   - This function will return the steer that each plane will do for the next turn.
   - Steers are a value in between -1 and 1, inclusive, with -1 being full left, 0 being straight, and 1 being full right.
   - Each plane has a unique id which can be accessed by `plane.id`.
