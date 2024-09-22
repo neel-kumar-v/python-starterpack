@@ -31,7 +31,7 @@ class Vector:
             return None
         return Vector(o*self.x, o*self.y)
     def __eq__(self, o):
-        if o is None:
+        if not isinstance(o, Vector):
             return False
         return self.x == o.x and self.y == o.y
     def __neg__(self):
@@ -69,7 +69,7 @@ class PlaneStats:
             plane = PlaneStats(
                 blob["speed"],
                 blob["turnSpeed"],
-                blob["health"],
+                blob["maxHealth"],
                 blob["attackSpreadAngle"],
                 blob["attackRange"],
             )

@@ -11,7 +11,6 @@ class Plane:
     angle: float
     health: int
     stats: PlaneStats
-    target: Vector
 
     def deserialize(blob: object) -> "Plane":
         try:
@@ -22,8 +21,7 @@ class Plane:
                 Vector.deserialize(blob["position"]),
                 blob["angle"],
                 blob["health"],
-                blob["stats"],
-                Vector(0, 0)
+                PlaneStats.deserialize(blob["stats"])
             )
         except:
             print("Failed to validate plane json")
