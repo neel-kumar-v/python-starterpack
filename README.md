@@ -25,7 +25,7 @@ visualize the game's progress and end result.
 
 ### NPM / Node
 
-First, you'll need [**Node**](https://nodejs.org/en/download/prebuilt-installer). You can check if you have it installed by running:
+First, you'll need [**Node**](https://nodejs.org/en/download/prebuilt-binaries). You can check if you have it installed by running:
 ```sh
 npm --version
 ```
@@ -191,16 +191,6 @@ To visualize what happened during the game, you can use the [Visualizer](https:/
 To install the MechMania cli, run:
 ```sh
 npm i mm30 -g
-```
-
-If you haven't registered with cli (different from the google form), make sure to do:
-```sh
-mm30 register
-```
-
-Then, login with:
-```sh
-mm30 login
 ```
 
 To build your bot into a `pyz` (a single file that holds all of your python code), run:
