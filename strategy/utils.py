@@ -86,7 +86,7 @@ def get_path_offset(t: float, steer: float, init_angle: float, speed: float, min
     # init angle is the direction the plane faces, so we need to shift to get the angle where the plane
     # is on the turning circle
     if (steer == 0):
-        return (speed * math.cos(init_angle_rad), speed * math.sin(init_angle_rad), init_angle)
+        return Vector(speed * math.cos(init_angle_rad), speed * math.sin(init_angle_rad))
     elif (steer < 0):
         init_angle_rad += math.pi / 2
     else:
@@ -115,8 +115,8 @@ def plane_path_offset(t: float, steer: float, plane: Plane):
     Returns:
     (position): This represents the actual position of the plane after t turns.
     """
-    turn_radius = degree_to_radius(plane.stats.turn_speed, plane.stats.speed)
-    off = get_path_offset(t, steer, plane.angle, plane.stats.speed, turn_radius)
+    turn_radius = degree_to_radius(plane.stats['turnSpeed'], plane.stats['speed'])
+    off = get_path_offset(t, steer, plane.angle, plane.stats['speed'], turn_radius)
     return plane.position + off
 
 def fly_to_offset(off: Vector, init_angle: float, min_turn: float, speed: float):
@@ -177,8 +177,8 @@ def plane_find_path_to_point(target: Vector, plane: Plane):
         (steer, turns): The steer required for a plane to pass through a given ABSOLUTE point after (turns) turns
     """
     off = target + -plane.position
-    turn_radius = degree_to_radius(plane.stats.turn_speed, plane.stats.speed)
-    return fly_to_offset(off, plane.angle, turn_radius, plane.stats.speed)
+    turn_radius = degree_to_radius(plane.stats['turnSpeed'], plane.stats['speed'])
+    return fly_to_offset(off, plane.angle, turn_radius, plane.stats['speed'])
 
 def unavoidable_crash(pos: Vector, angle: float, min_turn: float, lb = -50, rb = 50, db = -50, ub = 50):
     """
@@ -208,8 +208,7 @@ def unavoidable_crash(pos: Vector, angle: float, min_turn: float, lb = -50, rb =
     lvec = Vector(x, y) + (min_turn * perp_vec)
     rvec = Vector(x, y) + (-min_turn * perp_vec)
 
-    # Checks if any point in either circle is out of bounds
-    lob = False
+    # Checks if any point in either circle is out of bounds  
     rob = False
     if lvec.x + min_turn > rb or lvec.x - min_turn < lb or lvec.y + min_turn > ub or lvec.y - min_turn < db:
         lob = True
@@ -243,7 +242,24 @@ def steer_crashes_plane(steer: float, plane: Plane):
         Returns True if plane in the given position will be unable to avoid a crash after
         one turn of flying at the given steer. Returns False otherwise.
     """
-    turn_radius = degree_to_radius(plane.stats.turn_speed, plane.stats.speed)
-    off = get_path_offset(1, steer, plane.angle, plane.stats.speed, turn_radius)
+    turn_radius = degree_to_radius(plane.stats['turnSpeed'], plane.stats['speed'])
+    off = get_path_offset(1, steer, plane.angle, plane.stats['speed'], turn_radius)
     pos = plane.position + off
-    return unavoidable_crash(pos, plane.angle + (plane.stats.turn_speed * steer), turn_radius)
+    return unavoidable_crash(pos, plane.angle + (plane.stats['turnSpeed'] * steer), turn_radius)
+
+def clamp(n: float, min: float, max: float): 
+    """
+    Returns n clamped between min and max
+    """
+    if n < min: 
+        return min
+    elif n > max: 
+        return max
+    else: 
+        return n 
+    
+def pretty_print_vector(v: Vector):
+    """
+    Returns a string representation of a vector with 2 decimal places
+    """
+    return f"({v.x:.1f}, {v.y:.1f})"

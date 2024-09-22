@@ -39,6 +39,7 @@ class RunOpponent(Enum):
     SELF = "self"
     COMPUTER_TEAM_0 = "computerTeam0"
     COMPUTER_TEAM_1 = "computerTeam1"
+    PIGEON = "pigeon"
 
 RED = '\033[91m'
 GREEN = '\033[92m'

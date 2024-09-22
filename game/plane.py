@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from game.plane_data import PlaneStats, PlaneType, Vector
 
@@ -11,6 +11,7 @@ class Plane:
     angle: float
     health: int
     stats: PlaneStats
+    target: Vector
 
     def deserialize(blob: object) -> "Plane":
         try:
@@ -21,7 +22,8 @@ class Plane:
                 Vector.deserialize(blob["position"]),
                 blob["angle"],
                 blob["health"],
-                blob["stats"]
+                blob["stats"],
+                Vector(0, 0)
             )
         except:
             print("Failed to validate plane json")
