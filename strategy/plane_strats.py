@@ -15,7 +15,7 @@ def all_scrapyard() -> dict[PlaneType, int]:
     }
 def all_pigeons() -> dict[PlaneType, int]:
     return {
-        # PlaneType.STANDARD: 10,
+        # PlaneType.STANDARD: 5,
         # PlaneType.FLYING_FORTRESS: 1,
         # PlaneType.THUNDERBIRD: 1,
         # PlaneType.SCRAPYARD_RESCUE: 1,
@@ -30,3 +30,20 @@ def all_thunder() -> dict[PlaneType, int]:
         # PlaneType.PIGEON: 100,
     }
 
+def all_standard() -> dict[PlaneType, int]:
+    return {
+        PlaneType.STANDARD: 5,
+        # PlaneType.FLYING_FORTRESS: 1,
+        # PlaneType.THUNDERBIRD: 1,
+        # PlaneType.SCRAPYARD_RESCUE: 1,
+        # PlaneType.PIGEON: 100,
+    }
+
+def all_fortress() -> dict[PlaneType, int]:
+    return {
+        # PlaneType.STANDARD: 5,
+        PlaneType.FLYING_FORTRESS: 3,
+        # PlaneType.THUNDERBIRD: 1,
+        # PlaneType.SCRAPYARD_RESCUE: 1,
+        PlaneType.PIGEON: 10,
+    }
