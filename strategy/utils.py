@@ -210,6 +210,7 @@ def unavoidable_crash(pos: Vector, angle: float, min_turn: float, lb = -50, rb =
 
     # Checks if any point in either circle is out of bounds  
     rob = False
+    lob = False
     if lvec.x + min_turn > rb or lvec.x - min_turn < lb or lvec.y + min_turn > ub or lvec.y - min_turn < db:
         lob = True
     if rvec.x + min_turn > rb or rvec.x - min_turn < lb or rvec.y + min_turn > ub or rvec.y - min_turn < db:

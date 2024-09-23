@@ -4,7 +4,7 @@ from game.plane_data import Vector
 import strategy.utils as u
 from game.base_strategy import BaseStrategy
 from game.plane import Plane, PlaneType
-from strategy.plane_strats import all_pigeons, all_scrapyard, all_thunder
+from strategy.plane_strats import all_pigeons, all_scrapyard, all_thunder, all_standard, all_fortress
 
 # The following is the heart of your bot. This controls what your bot does.
 # Feel free to change the behavior to your heart's content.
@@ -31,10 +31,9 @@ class Strategy(BaseStrategy):
     
     def select_planes(self) -> dict[PlaneType, int]:
         # Select which planes you want, and what number
-        if self.team == 0:
-            return all_scrapyard()
-        if self.team == 1:
-            return all_pigeons()
+        # if self.team == 0:
+        return all_scrapyard()
+
     
     def steer_input(self, planes: dict[str, Plane]) -> dict[str, float]:
         # Define a dictionary to hold our response
@@ -61,14 +60,38 @@ class Strategy(BaseStrategy):
             #     self.plane_target[id] = target
            
             enemy_plane = self.enemy_planes[self.find_closest_enemy_id(plane, self.enemy_planes)]
-            # print(f"Closest enemy to {id}: {enemy_id}")
             self.plane_target[id] = self.predict_plane_position_if_straight(enemy_plane, 1) 
+            print(f"Closest enemy to {id}: {u.pretty_print_vector(self.plane_target[id])}")
+
 
             # if self.turn_count == 0:
             #     self.plane_status(planes) # Print the status of all planes
             # if self.turn_count % 5 == 0:
             #     self.wiggle = -self.wiggle
-            response[id] = self.steer_to(plane, self.plane_target[id], self.wiggle)
+            radius = self.get_plane_circling_radius(plane)
+            top_right = Vector(X_MAX - radius * 3, Y_MAX - radius * 3)
+            top_left = Vector(X_MIN + radius * 3, Y_MAX - radius * 3)
+            bottom_right = Vector(X_MAX - radius * 3, Y_MIN + radius * 3)
+            bottom_left = Vector(X_MIN + radius * 3, Y_MIN + radius * 3)
+
+            if self.team == 0:
+                if self.turn_count < 20:
+                    if int(id) % 2 == 0:
+                        response[int(id)] = self.steer_to(plane, top_left, False)
+                    else:
+                        response[id] = self.steer_to(plane, top_right, False)
+                else:
+                    response[id] = self.steer_to(plane, self.plane_target[id], self.turn_count > 60 and (self.turn_count % 200 < 100))
+            else:
+                if self.turn_count < 20:
+                    if int(id) % 2 == 0:
+                        response[int(id)] = self.steer_to(plane, bottom_right, False)
+                    else:
+                        response[id] = self.steer_to(plane, bottom_left, False)
+                else:
+                    response[id] = self.steer_to(plane, self.plane_target[id], self.turn_count > 60 and (self.turn_count % 200 < 100))
+
+
             
         # Increment counter to keep track of what turn we're on
         self.turn_count += 1
@@ -101,7 +124,7 @@ class Strategy(BaseStrategy):
     def get_plane_circling_radius(self, plane: Plane) -> float:
         return u.degree_to_radius(plane.stats['turnSpeed'], plane.stats['speed'])
     
-    def steer_to(self, plane: Plane, target: Vector, wiggle: float) -> float:
+    def steer_to(self, plane: Plane, target: Vector, follow_walls: bool) -> float:
         # Compute the vector from the plane's position to the target
         delta_x = target.x - plane.position.x
         delta_y = target.y - plane.position.y
@@ -126,7 +149,7 @@ class Strategy(BaseStrategy):
             if not u.steer_crashes_plane(temp_steer, plane):
                 steer = temp_steer
         # IDK why this makes it follow the edges but it does
-        if abs(steer) > 0.999999:
+        if follow_walls:
             temp_steer = self.validate_steer(plane, 0)
             if not u.steer_crashes_plane(temp_steer, plane):
                 steer = temp_steer
@@ -139,7 +162,7 @@ class Strategy(BaseStrategy):
         top_right = Vector(X_MAX - radius * 3, Y_MAX - radius * 3)
         top_left = Vector(X_MIN + radius * 3, Y_MAX - radius * 3)
         bottom_right = Vector(X_MAX - radius * 3, Y_MIN + radius * 3)
-        bottom_left = Vector(X_MIN + radius * 3, Y_MIN + self.get_plane_circling_radius(plane))
+        bottom_left = Vector(X_MIN + radius * 3, Y_MIN + radius * 3)
         targets = [top_right, top_left, bottom_right, bottom_left]
         target = targets[(self.turn_count + int(id)) % 4]
         return target
