@@ -81,7 +81,8 @@ class Strategy(BaseStrategy):
                     else:
                         response[id] = self.steer_to(plane, top_right, False)
                 else:
-                    response[id] = self.steer_to(plane, self.plane_target[id], self.turn_count > 60 and (self.turn_count % 200 < 100))
+                    # response[id] = self.steer_to(plane, self.plane_target[id], self.turn_count > 60 and (self.turn_count % 200 < 100))
+                    response[id] = self.steer_to(plane, self.plane_target[id], True)
             else:
                 if self.turn_count < 20:
                     if int(id) % 2 == 0:
@@ -89,7 +90,8 @@ class Strategy(BaseStrategy):
                     else:
                         response[id] = self.steer_to(plane, bottom_left, False)
                 else:
-                    response[id] = self.steer_to(plane, self.plane_target[id], self.turn_count > 60 and (self.turn_count % 200 < 100))
+                    # response[id] = self.steer_to(plane, self.plane_target[id], self.turn_count > 60 and (self.turn_count % 200 < 100))
+                    response[id] = self.steer_to(plane, self.plane_target[id], False)
 
 
             
